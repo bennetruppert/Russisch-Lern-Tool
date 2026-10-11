@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="de" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kyrillisch Lern-App</title>
+<style>
+:root{--bg:#f2f2f7;--card:#fff;--ink:#1c1c1e;--mut:#6c6c70;--line:rgba(60,60,67,.18);--accent:#0a64d6;--on-accent:#fff;--ok:#16803d;--okbg:rgba(52,199,89,.17);--warn:#9a5b00;--warnbg:rgba(255,159,10,.2);--bad:#c9111f;--badbg:rgba(255,59,48,.14);--new:rgba(120,120,128,.16);--glass:rgba(255,255,255,.64);--ind:rgba(120,120,128,.18);--shadow:0 1px 2px rgba(0,0,0,.04),0 12px 32px rgba(28,28,30,.08);--bar-shadow:0 .5px 0 rgba(255,255,255,.7) inset,0 8px 28px rgba(28,28,30,.14);--spring:cubic-bezier(.22,1,.36,1);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--card:#1c1c1e;--ink:#f5f5f7;--mut:#9b9ba3;--line:rgba(235,235,245,.18);--accent:#4da3ff;--on-accent:#00152e;--ok:#4cd97b;--okbg:rgba(48,209,88,.2);--warn:#ffb340;--warnbg:rgba(255,159,10,.22);--bad:#ff6b63;--badbg:rgba(255,69,58,.2);--new:rgba(120,120,128,.3);--glass:rgba(44,44,46,.62);--ind:rgba(255,255,255,.15);--shadow:0 .5px 0 rgba(255,255,255,.08) inset,0 12px 32px rgba(0,0,0,.55);--bar-shadow:0 .5px 0 rgba(255,255,255,.14) inset,0 8px 28px rgba(0,0,0,.6)}}
+:root[data-theme="dark"]{--bg:#000;--card:#1c1c1e;--ink:#f5f5f7;--mut:#9b9ba3;--line:rgba(235,235,245,.18);--accent:#4da3ff;--on-accent:#00152e;--ok:#4cd97b;--okbg:rgba(48,209,88,.2);--warn:#ffb340;--warnbg:rgba(255,159,10,.22);--bad:#ff6b63;--badbg:rgba(255,69,58,.2);--new:rgba(120,120,128,.3);--glass:rgba(44,44,46,.62);--ind:rgba(255,255,255,.15);--shadow:0 .5px 0 rgba(255,255,255,.08) inset,0 12px 32px rgba(0,0,0,.55);--bar-shadow:0 .5px 0 rgba(255,255,255,.14) inset,0 8px 28px rgba(0,0,0,.6)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+*,*:before,*:after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:1rem/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-optical-sizing:auto;-webkit-tap-highlight-color:transparent}
+body:after{content:"";position:fixed;left:0;right:0;bottom:0;height:calc(7rem + env(safe-area-inset-bottom,0px));background:linear-gradient(to bottom,transparent,var(--bg) 72%);pointer-events:none;z-index:1}
+main{max-width:32.5rem;margin:0 auto;padding:1rem 1rem calc(6.5rem + env(safe-area-inset-bottom,0px))}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation;transition:transform .4s var(--spring),background-color .2s,opacity .2s}
+button:active:not(:disabled),.card.tap:active{transform:scale(.97);transition:transform 90ms ease-out}
+button:focus-visible,.card:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabs{--i:0;position:fixed;z-index:5;left:50%;transform:translateX(-50%);bottom:calc(.75rem + env(safe-area-inset-bottom,0px));width:min(calc(100% - 1.5rem),31rem);display:grid;grid-template-columns:repeat(2,1fr);padding:.25rem;border-radius:1.6rem;background:var(--glass);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);box-shadow:var(--bar-shadow)}
+.tabs:before{content:"";position:absolute;top:.25rem;bottom:.25rem;left:.25rem;width:calc((100% - .5rem)/2);border-radius:1.35rem;background:var(--ind);transform:translateX(calc(var(--i)*100%));transition:transform .45s var(--spring)}
+.tabs button{position:relative;padding:.7rem .25rem;border-radius:1.35rem;color:var(--mut);font-size:.9375rem;font-weight:600;letter-spacing:.005em}
+.tabs button[aria-selected="true"]{color:var(--ink)}
+.bar{display:flex;height:.375rem;border-radius:1rem;overflow:hidden;background:var(--new)}
+.bar i{display:block;height:100%;transition:width .5s var(--spring)}
+.meta{display:flex;justify-content:space-between;align-items:center;font-size:.8125rem;letter-spacing:.01em;color:var(--mut);margin:.5rem .125rem 1rem}
+.lnk{color:var(--accent);font-size:.8125rem;font-weight:600;padding:.25rem 0}
+.card{position:relative;background:var(--card);border-radius:1.75rem;box-shadow:var(--shadow);min-height:52vh;min-height:52dvh;max-height:35rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2.75rem 1.25rem 1.5rem;user-select:none;-webkit-user-select:none}
+.card.q{min-height:36vh;min-height:36dvh}
+.card[role="button"]{cursor:pointer;transition:transform .4s var(--spring)}
+.card>:not(.badge):not(.state){animation:rise .5s var(--spring) both}
+.card>:nth-child(n+4){animation-delay:.04s}.card>:nth-child(n+5){animation-delay:.08s}.card>:nth-child(n+6){animation-delay:.12s}
+@keyframes rise{from{opacity:0;transform:translateY(.6rem) scale(.97);filter:blur(5px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.badge{position:absolute;top:1rem;left:1.25rem;font-size:.75rem;letter-spacing:.02em;color:var(--mut)}
+.state{position:absolute;top:.875rem;right:1rem;font-size:.75rem;font-weight:600;letter-spacing:.02em;padding:.2rem .65rem;border-radius:1rem}
+.big{font-size:min(34vw,9.5rem);line-height:1;font-weight:600;letter-spacing:-.03em}
+.word{font-size:min(13vw,3.75rem);font-weight:650;line-height:1.1;letter-spacing:-.025em;overflow-wrap:anywhere}
+.word.sm{font-size:1.75rem;margin-bottom:.625rem;color:var(--mut);font-weight:600}
+.small{font-size:2.5rem;line-height:1.1;font-weight:600;letter-spacing:-.025em;margin-bottom:.625rem;color:var(--mut)}
+.hint{margin-top:1.5rem;color:var(--mut);font-size:.9375rem;max-width:20rem}
+.snd{font-size:2.875rem;line-height:1.1;font-weight:700;letter-spacing:-.025em;color:var(--accent)}
+.det{color:var(--mut);margin-top:.25rem;font-size:.9375rem}
+.mean{margin-top:1rem;font-size:1.625rem;line-height:1.2;font-weight:650;letter-spacing:-.015em}
+.ex{margin-top:1.25rem;font-size:1.375rem;font-weight:600;letter-spacing:-.01em}
+.ex span{display:block;margin-top:.125rem;font-size:.875rem;font-weight:400;letter-spacing:.005em;color:var(--mut)}
+.tip{margin-top:1.1rem;padding:.65rem .95rem;border-radius:.95rem;background:var(--new);font-size:.9375rem;line-height:1.4}
+.acts,.opts{display:grid;grid-template-columns:1fr 1fr;gap:.625rem;margin-top:.875rem}
+.acts button{border-radius:1.15rem;padding:1.05rem;font-size:1.0625rem;font-weight:650}
+.no{background:var(--badbg);color:var(--bad)}.yes{background:var(--okbg);color:var(--ok)}
+.acts button:disabled{opacity:.4;cursor:default}
+.opts button{display:flex;align-items:center;justify-content:center;gap:.4rem;min-height:3.75rem;padding:.8rem .6rem;border-radius:1.15rem;background:var(--card);box-shadow:var(--shadow);font-size:1.0625rem;font-weight:600;overflow-wrap:anywhere}
+.opts button.ok{background:var(--okbg);color:var(--ok);box-shadow:none}.opts button.bad{background:var(--badbg);color:var(--bad);box-shadow:none}
+.opts button.ok:after{content:"✓"}.opts button.bad:after{content:"✕"}
+.opts button:disabled{cursor:default}.opts button:disabled:not(.ok):not(.bad){opacity:.45}
+.next{width:100%;margin-top:.75rem;border-radius:1.15rem;padding:1.05rem;background:var(--accent);color:var(--on-accent);font-size:1.0625rem;font-weight:650}
+.cats{display:flex;gap:.5rem;overflow-x:auto;margin:0 -1rem .25rem;padding:.25rem 1rem 1rem;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 1rem,#000 calc(100% - 1.75rem),transparent);mask-image:linear-gradient(90deg,transparent 0,#000 1rem,#000 calc(100% - 1.75rem),transparent)}
+.cats::-webkit-scrollbar{display:none}
+.cat{flex:none;white-space:nowrap;padding:.45rem .9rem;border-radius:2rem;background:var(--card);box-shadow:var(--shadow);color:var(--mut);font-size:.875rem;font-weight:600}
+.cat[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);box-shadow:none}
+h2{font-size:1.0625rem;font-weight:700;letter-spacing:-.01em;margin:1.75rem .125rem .625rem}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.625rem}
+.stat{background:var(--card);box-shadow:var(--shadow);border-radius:1.15rem;padding:.9rem .5rem;text-align:center}
+.stat b{display:block;font-size:1.625rem;line-height:1.15;font-weight:700;letter-spacing:-.02em}.stat span{font-size:.75rem;letter-spacing:.01em;color:var(--mut)}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:.5rem;margin:.75rem 0}
+.cell{aspect-ratio:1;border-radius:.9rem;font-size:1.2rem;font-weight:650}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0}
+.chip{padding:.45rem .85rem;border-radius:2rem;font-size:.9375rem;font-weight:600}
+.s-neu{background:var(--new);color:var(--mut)}.s-uben{background:var(--badbg);color:var(--bad)}.s-lernend{background:var(--warnbg);color:var(--warn)}.s-sicher{background:var(--okbg);color:var(--ok)}
+.legend{display:flex;flex-wrap:wrap;gap:.375rem 1rem;font-size:.8125rem;color:var(--mut)}
+.legend i{display:inline-block;width:.6875rem;height:.6875rem;border-radius:50%;margin-right:.375rem;vertical-align:-1px}
+.reset{margin-top:1.5rem;width:100%;padding:.95rem;border-radius:1.15rem;background:var(--card);box-shadow:var(--shadow);color:var(--bad);font-weight:600}
+@media (prefers-reduced-motion:reduce){.card>:not(.badge):not(.state){animation:fade .2s both;animation-delay:0s!important}.tabs:before,.bar i,button,.card[role="button"]{transition:none!important}button:active:not(:disabled),.card.tap:active{transform:none}}
+@media (prefers-reduced-transparency:reduce){.tabs{background:var(--card);-webkit-backdrop-filter:none;backdrop-filter:none}}
+@media (prefers-contrast:more){:root{--mut:#3a3a3c}.card,.opts button,.cat,.stat,.tabs,.reset{border:1px solid var(--ink)}}
+h1.large{font-size:2.125rem;line-height:1.1;font-weight:800;letter-spacing:-.03em;margin:.5rem .125rem .25rem}
+.sub{margin:0 .125rem 1.25rem;color:var(--mut);font-size:.9375rem}
+.goal{display:flex;align-items:center;gap:1rem;width:100%;text-align:left;background:var(--card);box-shadow:var(--shadow);border-radius:1.5rem;padding:1rem 1.1rem}
+.goal svg{flex:none;color:var(--ink)}.goal b{display:block;font-size:1.0625rem;letter-spacing:-.01em}.goal span{display:block;color:var(--mut);font-size:.875rem}.goal .fl{margin-top:.125rem;color:var(--accent);font-weight:600}
+.next.home{margin:.875rem 0 0}
+.mods{display:grid;gap:.625rem}
+.mod{display:flex;align-items:center;gap:.9rem;width:100%;text-align:left;background:var(--card);box-shadow:var(--shadow);border-radius:1.35rem;padding:.9rem 1rem}
+.mod .ic{flex:none;width:3rem;height:3rem;border-radius:.95rem;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-weight:700;font-size:1.05rem;letter-spacing:-.02em}
+.mod .mt{flex:1;min-width:0}.mod b{display:block;font-size:1.0625rem;letter-spacing:-.01em}.mod small{display:block;color:var(--mut);font-size:.8125rem;margin-bottom:.45rem}
+.mod .cnt{flex:none;color:var(--mut);font-size:.875rem;font-variant-numeric:tabular-nums}
+.top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin:-.25rem 0 .5rem}
+.top .lnk{justify-self:end}.back{justify-self:start;color:var(--accent);font-weight:600;padding:.4rem .5rem .4rem 0}.ttl{font-size:1rem;letter-spacing:-.01em}
+.gq{font-size:1.45rem;line-height:1.25;font-weight:650;letter-spacing:-.015em}.gq.sm{font-size:1rem;color:var(--mut);margin-bottom:.75rem;font-weight:600}
+.opts.one{grid-template-columns:1fr}
+.next{scroll-margin-bottom:6.5rem}
+</style>
+</head>
+<body>
+<main>
+  <section id="home"></section>
+  <section id="learn" hidden></section>
+  <section id="prog" hidden></section>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="t-home" aria-selected="true">Start</button>
+    <button role="tab" id="t-prog" aria-selected="false">Fortschritt</button>
+  </div>
+</main>
+<script>
+const GROUPS=["","Alte Bekannte","Falsche Freunde","Griechen und Spiegelbilder","Zischlaute","Vokale und Zeichen"];
+const C=`А|а|a|kurz, wie in „Bahn“|автобус|awtóbuss|Bus|wie unser A|1
+Б|б|b||банк|bank|Bank|wie eine 6 mit Fahne|3
+В|в|w|wie deutsches „w“|вода|wodá|Wasser|В = W (wie Wodka)|2
+Г|г|g|am Wortende: k|гараж|garásch|Garage|Gamma (Γ)|3
+Д|д|d|am Wortende: t|дом|dom|Haus|Delta (Δ), Haus mit Dach|3
+Е|е|je|wie „ja“ mit e|евро|jéwro|Euro|sieht aus wie E, klingt „je“|2
+Ё|ё|jo|immer betont|ёлка|jólka|Tannenbaum|Е mit zwei Punkten|5
+Ж|ж|zh|stimmhaft, wie g in „Garage“|журнал|zhurnál|Zeitschrift|Käfer (жук = Käfer)|4
+З|з|s|stimmhaft, wie in „Sonne“|зима|simá|Winter|sieht aus wie eine 3|3
+И|и|i|lang, wie in „Igel“|игра|igrá|Spiel|gespiegeltes N|3
+Й|й|j|kurzes i, nach Vokal|мой|moj|mein|И mit Hütchen|3
+К|к|k||кофе|kófe|Kaffee|wie unser K|1
+Л|л|l||лампа|lámpa|Lampe|Lambda (Λ), Lampe unterm Dach|3
+М|м|m||мама|máma|Mama|wie unser M|1
+Н|н|n||нос|noss|Nase|Н = N (nicht H!)|2
+О|о|o|betont = o, unbetont ≈ a|окно|oknó|Fenster|rund wie ein O|1
+П|п|p||парк|park|Park|Pi (Π), ein Portal|3
+Р|р|r|gerollt, Zungenspitze|рыба|rýba|Fisch|Р = R (nicht P!)|2
+С|с|ss|stimmlos, wie „ß“|сок|ssok|Saft|С = S (wie „Cent“)|2
+Т|т|t||такси|taksí|Taxi|wie unser T|1
+У|у|u||утро|útro|Morgen|У = U (nicht Y!)|2
+Ф|ф|f||фото|fóto|Foto|Phi (Φ)|3
+Х|х|ch|wie in „Bach“|хлеб|chlep|Brot|Х = ch (wie „Chlor“)|2
+Ц|ц|z|wie in „Zirkus“|цирк|zirk|Zirkus|Z mit Füßchen|4
+Ч|ч|tsch|immer weich|чай|tschaj|Tee|sieht aus wie 4 (четыре = vier)|4
+Ш|ш|sch|hart, wie in „Schule“|школа|schkóla|Schule|Gabel mit 3 Zinken|4
+Щ|щ|schtsch|langes weiches sch|борщ|borschtsch|Rote-Bete-Suppe|Ш mit Schwänzchen|4
+Ъ|ъ|stumm|Härtezeichen, trennt Laute|объект|objékt|Objekt|selten, trennt Laute|5
+Ы|ы|y|dumpfes i, Zunge zurück|ты|ty|du|Ь + I zusammen, nie am Wortanfang|5
+Ь|ь|stumm|Weichheitszeichen|день|denj|Tag|macht den Laut davor weich|5
+Э|э|e|offen, wie „Bett“|это|éto|das|gespiegeltes E|3
+Ю|ю|ju||юг|juk|Süden|I + O zusammen|5
+Я|я|ja||яблоко|jábloko|Apfel|gespiegeltes R|5`.split("\n").map(r=>{const a=r.split("|");return{u:a[0],l:a[1],snd:a[2],det:a[3],ex:a[4],tr:a[5],mean:a[6],tip:a[7],g:+a[8]}});
+
+const WG=["","Basics","Pronomen","Fragewörter","Alltag","Verben","Sätze","Zahlen","Zeit"];
+const Wd=`привет|priwét|Hallo||1
+спасибо|spassíba|Danke||1
+да|da|Ja||1
+нет|njet|Nein|mit j: „njet“|1
+пожалуйста|paschálusta|Bitte, gern geschehen|das й ist fast stumm|1
+здравствуйте|sdrástwujtje|Guten Tag (höflich)|das erste в wird nicht gesprochen|1
+пока|paká|Tschüss|unbetontes о klingt wie a|1
+до свидания|da swidánija|Auf Wiedersehen||1
+доброе утро|dóbraje útra|Guten Morgen||1
+извините|iswinítje|Entschuldigung||1
+хорошо|charaschó|gut, okay|nur das letzte о ist betont|1
+плохо|plócha|schlecht||1
+я|ja|ich||2
+ты|ty|du||2
+он|on|er||2
+она|aná|sie||2
+мы|my|wir||2
+вы|wy|ihr, Sie (höflich)||2
+что|schto|was|Ausnahme: ч klingt hier wie sch|3
+кто|kto|wer||3
+где|gdje|wo||3
+как|kak|wie||3
+когда|kagdá|wann||3
+почему|patschimú|warum||3
+вода|wadá|Wasser|unbetontes о klingt wie a|4
+хлеб|chljep|Brot|б am Ende klingt wie p|4
+дом|dom|Haus||4
+друг|druk|Freund|г am Ende klingt wie k|4
+мама|máma|Mama||4
+папа|pápa|Papa||4
+город|górat|Stadt|д am Ende klingt wie t|4
+помогите|pamagítje|Hilfe!||4
+есть|jestj|es gibt, ist||5
+хочу|chatschú|ich will, ich möchte||5
+могу|magú|ich kann||5
+знаю|snáju|ich weiß||5
+понимаю|panimáju|ich verstehe||5
+говорю|gawarjú|ich spreche||5
+люблю|ljubljú|ich liebe, ich mag||5
+Меня зовут …|minjá sawút|Ich heiße …|wörtlich: „mich nennt man“|6
+Как дела?|kak dilá|Wie geht es dir?||6
+Всё хорошо|wsjo charaschó|Alles gut|ё klingt „jo“|6
+Я не понимаю|ja ni panimáju|Ich verstehe nicht||6
+Сколько стоит?|skólka stóit|Wie viel kostet das?||6
+Я из Германии|ja is Girmánii|Ich komme aus Deutschland||6
+Очень приятно|ótschin prijátna|Freut mich||6
+один|adín|eins||7
+два|dwa|zwei||7
+три|tri|drei||7
+четыре|tschitýre|vier||7
+пять|pjatj|fünf||7
+шесть|schestj|sechs||7
+семь|sjemj|sieben||7
+восемь|wósjemj|acht||7
+девять|djéwjatj|neun||7
+десять|djéssjatj|zehn||7
+сегодня|ssiwódnja|heute|г klingt hier wie w|8
+завтра|sáwtra|morgen||8
+сейчас|ssejtschás|jetzt||8`.split("\n").map(r=>{const a=r.split("|");return{u:a[0],tr:a[1],mean:a[2],tip:a[3],g:+a[4]}});
+const PG=["","Kennenlernen","Verständigung","Essen und Einkaufen","Unterwegs","Notfall"];
+const Pd=`Как тебя зовут?|kak tibjá sawút|Wie heißt du?||1
+Мне … лет|mnje … ljet|Ich bin … Jahre alt|wörtlich: „mir … Jahre“|1
+Я учусь в школе|ja utschúsj fschkóle|Ich gehe zur Schule||1
+Я говорю немного по-русски|ja gawarjú nimnóga pa-rússki|Ich spreche ein bisschen Russisch||1
+А как у тебя?|a kak u tibjá|Und bei dir?|wörtlich: „und wie bei dir“|1
+Рад познакомиться|rat paznakómitsja|Freut mich, dich kennenzulernen|eine Frau sagt: Рада познакомиться|1
+Повторите, пожалуйста|paftarítje paschálusta|Bitte wiederholen Sie||2
+Говорите медленнее|gawarítje mjédlinnie|Sprechen Sie bitte langsamer||2
+Вы говорите по-английски?|wy gawarítje pa-anglíjski|Sprechen Sie Englisch?||2
+Что это значит?|schto éta snátschit|Was bedeutet das?||2
+Как по-русски …?|kak pa-rússki|Wie sagt man … auf Russisch?||2
+Я не знаю|ja ni snáju|Ich weiß es nicht||2
+Ничего страшного|nitschiwó stráschnawa|Kein Problem, macht nichts|г klingt hier wie w|2
+Я хочу воду|ja chatschú wódu|Ich möchte Wasser|воду ist die Form nach „хочу“|3
+Можно меню?|móschna minjú|Kann ich die Speisekarte haben?||3
+Счёт, пожалуйста|schtschjot paschálusta|Die Rechnung, bitte||3
+Это очень вкусно|éta ótschinj fkússna|Das ist sehr lecker|в am Anfang klingt wie f|3
+Дайте, пожалуйста, …|dájtje paschálusta|Geben Sie mir bitte …||3
+Я возьму это|ja wasmú éta|Ich nehme das||3
+Где туалет?|gdje tualét|Wo ist die Toilette?||4
+Где находится …?|gdje nachóditsja|Wo befindet sich …?||4
+Как пройти к …?|kak praijtí k|Wie komme ich zu …?||4
+Прямо, потом налево|prjáma patóm naljéwa|Geradeaus, dann links||4
+Направо|napráwa|rechts|налево heißt links||4
+Мне нужно такси|mnje núschna taksí|Ich brauche ein Taxi||4
+Мне нужен врач|mnje núschen wratsch|Ich brauche einen Arzt||5
+Вызовите скорую|wysawítje skóruju|Rufen Sie den Notarzt||5
+Я потерялся|ja patirjálsja|Ich habe mich verirrt|eine Frau sagt: потерялась|5
+У меня проблема|u minjá prabljéma|Ich habe ein Problem||5
+Это срочно|éta sróschna|Es ist dringend||5`.split("\n").map(r=>{const a=r.split("|");return{u:a[0],tr:a[1],mean:a[2],tip:a[3],g:+a[4]}});
+const GG=["","Satzbau","Nomen","Verben","Fälle"];
+const Gd=`1|„Ich bin Student“ – wie sagt man das?|Я студент|Я есть студент|Я быть студент|Im Präsens fehlt „sein“ einfach. Man sagt wörtlich: „Ich Student“.
+1|Wie wird aus „Ты студент.“ eine Frage?|Nur mit steigender Stimme: Ты студент?|Mit Hilfsverb: Ты есть студент?|Mit umgedrehter Wortstellung|Fragen entstehen allein durch die Betonung. Im Text steht nur ein Fragezeichen.
+1|Wie sagt man „Ich weiß nicht“?|Я не знаю|Я нет знаю|Нет я знаю|не steht direkt vor dem Verb. нет ist das eigenständige „Nein“.
+1|Wie viele Artikel (der, die, das) hat Russisch?|Keine|Drei, wie im Deutschen|Einen: тот|книга heißt „Buch“, „das Buch“ und „ein Buch“. Artikel gibt es nicht.
+2|Welches Geschlecht hat „книга“ (Buch)?|weiblich|männlich|sächlich|Endung -а oder -я: weiblich. Endet es auf Konsonant: männlich. Endung -о oder -е: sächlich.
+2|Welches Geschlecht hat „окно“ (Fenster)?|sächlich|männlich|weiblich|Endung -о oder -е bedeutet sächlich.
+2|Welches Geschlecht hat „дом“ (Haus)?|männlich|weiblich|sächlich|Wörter auf Konsonant sind männlich.
+2|Wie sagt man „mein Haus“? (дом ist männlich)|мой дом|моя дом|моё дом|мой (männlich), моя (weiblich), моё (sächlich). Das Wort richtet sich nach dem Nomen.
+2|Wie sagt man „meine Mama“?|моя мама|мой мама|моё мама|мама endet auf -а und ist weiblich, deshalb моя.
+2|Was ist der Plural von „книга“?|книги|книгы|книгов|Aus -а wird im Plural -ы. Nach г, к, х, ж, ч, ш, щ schreibt man stattdessen -и.
+3|ты ___ (знать): welche Form passt?|знаешь|знаю|знает|я знаю, ты знаешь, он знает, мы знаем, вы знаете, они знают. Die Endung zeigt die Person.
+3|Wie sagt man „Ich spreche“ (говорить)?|Я говорю|Я говорить|Я говоришь|Nie den Infinitiv (говорить) benutzen. Nach я steht -ю oder -у.
+3|Wie sagt eine Frau „Ich habe gelesen“?|Я читала|Я читал|Я читало|Vergangenheit: -л (männlich), -ла (weiblich), -ло (sächlich), -ли (Plural). Es zählt, wer spricht.
+3|Wie sagt man „Ich werde lesen“?|Я буду читать|Я буду читаю|Я будет читать|Futur: буду, будешь, будет … plus Infinitiv.
+4|Wie sagt man „Ich liebe Mama“?|Я люблю маму|Я люблю мама|Я люблю маме|Akkusativ: weibliche Wörter auf -а bekommen -у (мама wird zu маму).
+4|Wie sagt man „in Moskau“?|в Москве|в Москва|в Москву|Auf die Frage „wo?“ steht meist -е am Ende. в Москву hieße „nach Moskau“.
+4|Wie sagt man „Ich habe einen Bruder“?|У меня есть брат|Я имею брат|Я есть брат|„Haben“ heißt: у меня есть + Sache, wörtlich „bei mir ist …“.`.split("\n").map(r=>{const a=r.split("|");return{g:+a[0],q:a[1],o:a.slice(2,-1),expl:a[a.length-1]}});
+const DECKS={
+ letters:{t:"Buchstaben",sub:"33 Zeichen mit Aussprache",ic:"Аб",data:C,gr:GROUPS,k:"c"},
+ words:{t:"Wörter",sub:"Die wichtigsten Startwörter",ic:"Да",data:Wd,gr:WG,k:"w"},
+ phrases:{t:"Phrasen",sub:"Alltag, Reise und Notfall",ic:"Как",data:Pd,gr:PG,k:"p"},
+ grammar:{t:"Grammatik",sub:"Einfache Regeln im Quiz",ic:"Что",data:Gd,gr:GG,k:"g"}};
+const MODES=Object.keys(DECKS);
+const KEY="kyr-karteikarten-v1";
+let st={c:{},w:{},p:{},g:{},streak:0,best:0,goal:15,cats:{}};
+try{const r=localStorage.getItem(KEY);if(r){const p=JSON.parse(r);if(p&&p.c)Object.assign(st,p)}}catch(e){}
+["c","w","p","g"].forEach(k=>st[k]=st[k]||{});
+if(Array.isArray(st.cats))st.cats={words:st.cats};
+st.cats=st.cats||{};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+const D=m=>DECKS[m].data,B=m=>st[DECKS[m].k];
+const rec=(m,i)=>B(m)[i]||{b:0,ok:0,no:0};
+const status=(m,i)=>{const r=B(m)[i];if(!r||r.ok+r.no===0)return"neu";if(r.b>=3)return"sicher";if(r.b>=1)return"lernend";return"uben"};
+const LABEL={neu:"Neu",uben:"Üben",lernend:"Lernend",sicher:"Sicher"};
+const COL={neu:"var(--new)",uben:"var(--bad)",lernend:"var(--warn)",sicher:"var(--ok)"};
+const TXT={neu:"var(--mut)",uben:"var(--bad)",lernend:"var(--warn)",sicher:"var(--ok)"};
+const $=id=>document.getElementById(id);
+const dstr=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+let mode="letters",view="home",cur={letters:-1,words:-1,phrases:-1,grammar:-1},flipped=false,opts=null;
+const inPool=(m,i)=>{const s=st.cats[m];return!s||!s.length||s.includes(D(m)[i].g)};
+function pick(m){
+  let open=0;
+  const w=D(m).map((_,i)=>{
+    if(!inPool(m,i)||i===cur[m])return 0;
+    const s=status(m,i);
+    if(s==="neu"){if(m!=="letters"&&open>=5)return 0;open++;return 5}
+    return({uben:5,lernend:3,sicher:1})[s];
+  });
+  const tot=w.reduce((a,b)=>a+b,0);
+  if(!tot){const f=D(m).findIndex((_,i)=>inPool(m,i));return f<0?0:f}
+  let r=Math.random()*tot;
+  for(let i=0;i<w.length;i++){r-=w[i];if(r<0)return i}
+  return 0;
+}
+function counts(m,all){const n={neu:0,uben:0,lernend:0,sicher:0};D(m).forEach((_,i)=>{if(all||inPool(m,i))n[status(m,i)]++});return n}
+function bar(n,t){return`<div class="bar" role="img" aria-label="${n.sicher} von ${t} sicher">`+["sicher","lernend","uben"].map(k=>`<i style="width:${n[k]/t*100}%;background:${COL[k]}"></i>`).join("")+`</div>`}
+const shuf=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+function makeOpts(m,i){
+  const c=D(m)[i];
+  if(m==="grammar")return shuf(c.o.map((t,k)=>({t,ok:k===0})));
+  const L=m==="letters",val=x=>L?x.snd:x.mean;
+  const pool=D(m).filter((x,j)=>j!==i&&val(x)!==val(c)),seen=new Set([val(c)]),out=[];
+  [...shuf(pool.filter(x=>x.g===c.g)),...shuf(pool)].forEach(x=>{if(out.length<3&&!seen.has(val(x))){seen.add(val(x));out.push(x)}});
+  return shuf([c,...out]).map(x=>({t:val(x),ok:x===c}));
+}
+function catsHtml(m){
+  const sel=st.cats[m]||[],gr=DECKS[m].gr;
+  return`<div class="cats"><button class="cat" data-c="0" aria-pressed="${!sel.length}">Alle</button>`+gr.map((g,k)=>k?`<button class="cat" data-c="${k}" aria-pressed="${sel.includes(k)}">${g} (${D(m).filter(w=>w.g===k).length})</button>`:"").join("")+`</div>`;
+}
+function toggleCat(k){
+  const m=mode;let sel=st.cats[m]||[];
+  if(k===0)sel=[];else sel=sel.includes(k)?sel.filter(x=>x!==k):[...sel,k];
+  if(sel.length===DECKS[m].gr.length-1)sel=[];
+  st.cats[m]=sel;save();cur[m]=-1;opts=null;flipped=false;renderLearn(false);
+}
+function dayStreak(){const t=dstr(new Date()),y=dstr(new Date(Date.now()-864e5));return(st.last===t||st.last===y)?(st.ds||0):0}
+function tick(){
+  const t=dstr(new Date());
+  if(!st.day||st.day.d!==t)st.day={d:t,n:0};
+  st.day.n++;
+  if(st.last!==t){st.ds=(st.last===dstr(new Date(Date.now()-864e5)))?(st.ds||0)+1:1;st.last=t}
+}
+function renderHome(){
+  const t=dstr(new Date()),n=(st.day&&st.day.d===t)?st.day.n:0,g=st.goal||15,pct=Math.min(1,n/g),R=34,CC=2*Math.PI*R,ds=dayStreak();
+  const lm=st.lm&&DECKS[st.lm]?st.lm:"letters";
+  const ring=`<svg width="84" height="84" viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="42" r="${R}" fill="none" stroke="var(--new)" stroke-width="9"/><circle cx="42" cy="42" r="${R}" fill="none" stroke="${n>=g?"var(--ok)":"var(--accent)"}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${CC*pct} ${CC}" transform="rotate(-90 42 42)"/><text x="42" y="49" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">${n}</text></svg>`;
+  $("home").innerHTML=`
+    <h1 class="large">Kyrillisch</h1><p class="sub">Russisch lernen, Schritt für Schritt</p>
+    <button class="goal" id="goal" aria-label="Tagesziel ändern">${ring}<div><b>Tagesziel</b><span>${n>=g?"Geschafft. Alles darüber ist Bonus.":n+" von "+g+" Karten heute"}</span><span class="fl">${ds?ds+(ds===1?" Tag":" Tage")+" in Folge":"Starte heute deine Serie"}</span></div></button>
+    <button class="next home" id="go">Weiter lernen: ${DECKS[lm].t}</button>
+    <h2>Lernpfade</h2>
+    <div class="mods">`+MODES.map(m=>{const c=counts(m,true),tt=D(m).length;return`<button class="mod" data-m="${m}"><span class="ic">${DECKS[m].ic}</span><span class="mt"><b>${DECKS[m].t}</b><small>${DECKS[m].sub}</small>${bar(c,tt)}</span><span class="cnt">${c.sicher}/${tt}</span></button>`}).join("")+`</div>
+    <p class="meta" style="display:block;margin-top:.875rem">Die Reihenfolge von oben nach unten ist ein guter Weg. Du kannst aber jederzeit springen.</p>`;
+  $("goal").onclick=()=>{const l=[10,15,25,40];st.goal=l[(l.indexOf(st.goal)+1)%l.length];save();renderHome()};
+  $("go").onclick=()=>openMode(lm);
+  document.querySelectorAll(".mod").forEach(b=>b.onclick=()=>openMode(b.dataset.m));
+}
+function openMode(m){mode=m;st.lm=m;save();flipped=false;opts=null;show("learn")}
+function renderLearn(anim){
+  const m=mode,K=DECKS[m],quiz=!st.self;
+  if(cur[m]<0)cur[m]=pick(m);
+  const key=m+cur[m];
+  if(quiz&&(!opts||opts.key!==key))opts={key,list:makeOpts(m,cur[m]),picked:null};
+  const c=D(m)[cur[m]],s=status(m,cur[m]),n=counts(m),t=D(m).filter((_,j)=>inPool(m,j)).length;
+  const shown=quiz?opts.picked!==null:flipped;
+  let front,back;
+  if(m==="letters"){
+    front=`<div class="big">${c.u} ${c.l}</div><div class="hint">${quiz?"Welcher Laut ist das?":"Tippe auf die Karte, um die Aussprache zu sehen"}</div>`;
+    back=`<div class="small">${c.u} ${c.l}</div><div class="snd">${c.snd}</div>${c.det?`<div class="det">${c.det}</div>`:""}
+      <div class="ex">${c.ex}<span>${c.tr}, ${c.mean}</span></div><div class="tip">Merkhilfe: ${c.tip}</div>`;
+  }else if(m==="grammar"){
+    front=`<div class="gq">${c.q}</div><div class="hint">${quiz?"Wähle die richtige Antwort.":"Überlege dir die Antwort, dann tippe auf die Karte."}</div>`;
+    back=`<div class="gq sm">${c.q}</div><div class="snd" style="font-size:1.9rem">${c.o[0]}</div><div class="tip">${c.expl}</div>`;
+  }else{
+    const sz=c.u.length>22?"1.6rem":c.u.length>12?"2.25rem":"",fs=sz?` style="font-size:${sz}"`:"";
+    front=`<div class="word"${fs}>${c.u}</div><div class="hint">${quiz?"Sprich es laut aus. Was bedeutet es?":"Entschlüssele es und sprich es laut aus. Dann tippe auf die Karte."}</div>`;
+    back=`<div class="word sm">${c.u}</div><div class="snd" style="font-size:${c.tr.length>12?"1.75rem":"2.5rem"}">${c.tr}</div><div class="mean">${c.mean}</div>${c.tip?`<div class="tip">${c.tip}</div>`:""}`;
+  }
+  let bottom;
+  if(quiz){
+    bottom=`<div class="opts${m==="grammar"?" one":""}">`+opts.list.map((o,k)=>`<button data-k="${k}" class="${shown?(o.ok?"ok":(k===opts.picked?"bad":"")):""}" ${shown?"disabled":""}>${o.t}</button>`).join("")+`</div>`+(shown?`<button class="next" id="nx">Weiter</button>`:"");
+  }else{
+    bottom=`<div class="acts"><button class="no" id="bn" ${flipped?"":"disabled"}>✗ Falsch</button><button class="yes" id="by" ${flipped?"":"disabled"}>✓ Richtig</button></div>`;
+  }
+  $("learn").innerHTML=`
+    <div class="top"><button class="back" id="bk">‹ Start</button><b class="ttl">${K.t}</b><button class="lnk" id="md">Modus: ${quiz?"Quiz":"Selbst"}</button></div>
+    ${catsHtml(m)}${bar(n,t)}<div class="meta"><span>${n.sicher} von ${t} sicher</span><span>Serie ${st.streak}</span></div>
+    <div class="card${anim?" pop":""}${quiz?" q":" tap"}" id="card" ${quiz?"":'tabindex="0" role="button" aria-label="Karte umdrehen"'}>
+      <span class="badge">${K.gr[c.g]}</span><span class="state" style="color:${TXT[s]};background:var(--new)">${LABEL[s]}</span>
+      ${shown?back:front}
+    </div>${bottom}`;
+  $("bk").onclick=()=>{flipped=false;show("home")};
+  document.querySelectorAll(".cat").forEach(b=>b.onclick=()=>toggleCat(+b.dataset.c));
+  $("md").onclick=()=>{st.self=!st.self;save();flipped=false;opts=null;renderLearn(false)};
+  if(quiz){
+    document.querySelectorAll(".opts button").forEach(b=>b.onclick=()=>choose(+b.dataset.k));
+    if(shown){$("nx").onclick=next;if($("nx").scrollIntoView)$("nx").scrollIntoView({block:"nearest"})}
+  }else{
+    $("card").onclick=()=>{if(!flipped){flipped=true;renderLearn(true)}};
+    $("bn").onclick=()=>answer(false);
+    $("by").onclick=()=>answer(true);
+  }
+}
+function grade(ok){
+  const m=mode,r=B(m)[cur[m]]=rec(m,cur[m]);
+  if(ok){r.ok++;r.b=Math.min(3,r.b+1);st.streak++;st.best=Math.max(st.best,st.streak)}
+  else{r.no++;r.b=0;st.streak=0}
+  tick();
+  try{navigator.vibrate&&navigator.vibrate(ok?10:[16,40,16])}catch(e){}
+  save();
+}
+function answer(ok){if(!flipped)return;grade(ok);flipped=false;cur[mode]=pick(mode);renderLearn(true)}
+function choose(k){if(!opts||opts.picked!==null)return;opts.picked=k;grade(opts.list[k].ok);renderLearn(true)}
+function next(){cur[mode]=pick(mode);renderLearn(true)}
+function renderProg(){
+  let ok=0,no=0;["c","w","p","g"].forEach(k=>Object.values(st[k]).forEach(r=>{ok+=r.ok;no+=r.no}));
+  const tot=ok+no,acc=tot?Math.round(ok/tot*100):0;
+  const sec=m=>{
+    const n=counts(m,true),t=D(m).length,cell=m==="letters"||m==="grammar";
+    const items=D(m).map((c,i)=>`<button class="${cell?"cell":"chip"} s-${status(m,i)}" data-m="${m}" data-i="${i}" aria-label="${m==="grammar"?"Frage "+(i+1):c.u}, ${LABEL[status(m,i)]}">${m==="letters"?c.u:m==="grammar"?i+1:c.u}</button>`).join("");
+    return`<h2>${DECKS[m].t}</h2>${bar(n,t)}<div class="meta"><span>${n.sicher} von ${t} sicher</span><span>${Math.round(n.sicher/t*100)} %</span></div><div class="${cell?"grid":"chips"}">${items}</div>`;
+  };
+  $("prog").innerHTML=`
+    <h1 class="large">Fortschritt</h1>
+    <div class="stats" style="margin-top:1rem"><div class="stat"><b>${tot}</b><span>Karten geübt</span></div><div class="stat"><b>${tot?acc+" %":"–"}</b><span>Trefferquote</span></div><div class="stat"><b>${dayStreak()}</b><span>Tage in Folge</span></div></div>
+    ${MODES.map(sec).join("")}
+    <div class="legend" style="margin-top:.875rem">${Object.keys(LABEL).map(k=>`<span><i style="background:${COL[k]}"></i>${LABEL[k]}</span>`).join("")}</div>
+    <p class="meta" style="display:block;margin-top:.625rem">Sicher heißt: dreimal in Folge richtig. Ein Fehler setzt die Karte zurück auf Üben. Neue Karten kommen nach Wichtigkeit, immer fünf auf einmal. Tippe auf ein Feld, um es gezielt zu lernen.</p>
+    <button class="reset" id="rs">Fortschritt zurücksetzen</button>`;
+  document.querySelectorAll(".cell,.chip").forEach(b=>b.onclick=()=>{mode=b.dataset.m;cur[mode]=+b.dataset.i;st.lm=mode;flipped=false;opts=null;show("learn")});
+  const rs=$("rs");let armed=false;
+  rs.onclick=()=>{if(!armed){armed=true;rs.textContent="Wirklich alles löschen? Nochmal tippen";return}
+    st={c:{},w:{},p:{},g:{},streak:0,best:0,goal:st.goal,cats:st.cats,self:st.self};save();opts=null;cur={letters:-1,words:-1,phrases:-1,grammar:-1};flipped=false;renderProg()};
+}
+function show(v){
+  view=v;
+  ["home","learn","prog"].forEach(k=>$(k).hidden=k!==v);
+  $("t-home").setAttribute("aria-selected",v!=="prog");$("t-prog").setAttribute("aria-selected",v==="prog");
+  document.querySelector(".tabs").style.setProperty("--i",v==="prog"?1:0);
+  if(typeof scrollTo==="function")scrollTo(0,0);
+  v==="home"?renderHome():v==="learn"?renderLearn(false):renderProg();
+}
+$("t-home").onclick=()=>{flipped=false;show("home")};
+$("t-prog").onclick=()=>{flipped=false;show("prog")};
+document.addEventListener("keydown",e=>{
+  if(view!=="learn")return;
+  if(!st.self){
+    if(!opts)return;
+    if(opts.picked===null&&/^[1-4]$/.test(e.key)){choose(+e.key-1);return}
+    if(opts.picked!==null&&(e.key===" "||e.key==="Enter")&&document.activeElement.tagName!=="BUTTON"){e.preventDefault();next()}
+    return;
+  }
+  if(e.key===" "||e.key==="Enter"){if(document.activeElement.tagName==="BUTTON")return;e.preventDefault();if(!flipped){flipped=true;renderLearn(true)}}
+  else if(flipped&&e.key==="ArrowLeft")answer(false);
+  else if(flipped&&e.key==="ArrowRight")answer(true);
+});
+show("home");
+</script>
+</body>
+</html>
